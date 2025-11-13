@@ -46,7 +46,34 @@ class SpecialPizza(
     }
 }
 
+class FrenchFries(
+    name: String,
+    basePrice: Double,
+    val size: FriesSize
+) :
+    MenuItem(name, basePrice) {
+    override fun calculatePrice(): Double {
+        return when(size) {
+            FriesSize.SMALL -> basePrice * 0.8
+            FriesSize.MEDIUM -> basePrice
+            FriesSize.LARGE -> basePrice * 1.4
+        }
+    }
+
+    fun prepare() {
+        println("Preparing fries '$name' size $size")
+    }
+
+    fun bake() {
+        println("Baking fries '$name'")
+    }
+}
+
 enum class PizzaSize {
+    SMALL, MEDIUM, LARGE
+}
+
+enum class FriesSize {
     SMALL, MEDIUM, LARGE
 }
 

@@ -62,9 +62,15 @@ class Pizzeria(val name: String) {
         order.changeStatus(OrderStatus.Cooking)
 
         order.processItems { item ->
-            if (item is Pizza) {
-                item.prepare()
-                item.bake()
+            when (item) {
+                is Pizza -> {
+                    item.prepare()
+                    item.bake()
+                }
+                is FrenchFries -> {
+                    item.prepare()
+                    item.bake()
+                }
             }
         }
 
