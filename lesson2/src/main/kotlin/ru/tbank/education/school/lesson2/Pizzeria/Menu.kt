@@ -63,9 +63,15 @@ class FrenchFries(
     fun prepare() {
         println("Preparing fries '$name' size $size")
     }
+}
 
-    fun bake() {
-        println("Baking fries '$name'")
+class Burger(
+    name: String,
+    basePrice: Double,
+) :
+    MenuItem(name, basePrice) {
+    override fun calculatePrice(): Double {
+        return basePrice
     }
 }
 

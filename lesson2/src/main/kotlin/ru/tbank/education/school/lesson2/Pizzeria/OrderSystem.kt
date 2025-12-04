@@ -69,7 +69,6 @@ class Pizzeria(val name: String) {
                 }
                 is FrenchFries -> {
                     item.prepare()
-                    item.bake()
                 }
             }
         }
