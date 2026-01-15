@@ -73,6 +73,10 @@ class Burger(
     override fun calculatePrice(): Double {
         return basePrice
     }
+
+    fun prepare() {
+        println("Preparing burger '$name'")
+    }
 }
 
 enum class PizzaSize {
