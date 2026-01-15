@@ -1,0 +1,2 @@
+logs/config/app.conf 3
+logs/config/db.conf 3
