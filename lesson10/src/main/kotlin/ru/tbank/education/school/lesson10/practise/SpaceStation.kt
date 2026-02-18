@@ -36,7 +36,7 @@ fun checkSchedule() {
 
         var matcher = patternA.matcher(trimmedLine)
         if (matcher.find()) {
-            val dt = matcher.group(1) // уже в правильном формате
+            val dt = matcher.group(1)
             val id = matcher.group(2).toInt()
             val status = matcher.group(3).lowercase()
             if (status != "sent" && status != "delivered") return null
