@@ -76,6 +76,32 @@ class LibraryController(
         ))
     }
     
+    // ==================== ЧИТАТЕЛИ ====================
+
+    @GetMapping("/readers")
+    fun getAllReaders(): ResponseEntity<List<Map<String, Any?>>> {
+        return ResponseEntity.ok(libraryService.getAllReadersWithBooks())
+    }
+
+    @PostMapping("/readers")
+    fun createReader(@RequestBody @Valid request: CreateReaderRequest): ResponseEntity<Map<String, Any?>> {
+        val reader = libraryService.createReader(request.name, request.email)
+        return ResponseEntity.ok(mapOf("id" to reader.id, "name" to reader.name, "email" to reader.email))
+    }
+
+    @PostMapping("/readers/{readerId}/books/{bookId}")
+    fun borrowBook(
+        @PathVariable readerId: Long,
+        @PathVariable bookId: Long
+    ): ResponseEntity<Map<String, Any?>> {
+        val reader = libraryService.borrowBook(readerId, bookId)
+        return ResponseEntity.ok(mapOf(
+            "id" to reader.id,
+            "name" to reader.name,
+            "booksCount" to reader.books.size
+        ))
+    }
+
     // ==================== ЖАНРЫ ====================
     
     // ========================================================================
@@ -94,6 +120,14 @@ class LibraryController(
 data class CreateAuthorRequest(
     @field:NotBlank(message = "Name is required")
     val name: String
+)
+
+data class CreateReaderRequest(
+    @field:NotBlank(message = "Name is required")
+    val name: String,
+
+    @field:NotBlank(message = "Email is required")
+    val email: String
 )
 
 data class CreateBookRequest(

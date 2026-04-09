@@ -6,4 +6,7 @@ package com.example.library.repository
 // ИНСТРУКЦИЯ:
 // 2. Создай интерфейс
 
+import com.example.library.entity.Reader
+import org.springframework.data.jpa.repository.JpaRepository
 
+interface ReaderRepository : JpaRepository<Reader, Long>

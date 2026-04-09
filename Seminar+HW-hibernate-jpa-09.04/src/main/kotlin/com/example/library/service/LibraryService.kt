@@ -3,9 +3,11 @@ package com.example.library.service
 import com.example.library.entity.Author
 import com.example.library.entity.Book
 import com.example.library.entity.Genre
+import com.example.library.entity.Reader
 import com.example.library.repository.AuthorRepository
 import com.example.library.repository.BookRepository
 import com.example.library.repository.GenreRepository
+import com.example.library.repository.ReaderRepository
 import jakarta.persistence.EntityNotFoundException
 import org.hibernate.Hibernate
 import org.springframework.data.domain.Page
@@ -18,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional
 class LibraryService(
     private val authorRepository: AuthorRepository,
     private val bookRepository: BookRepository,
-    private val genreRepository: GenreRepository
+    private val genreRepository: GenreRepository,
+    private val readerRepository: ReaderRepository
 ) {
     
     // ==================== АВТОРЫ ====================
@@ -81,13 +84,12 @@ class LibraryService(
         val genre = genreRepository.findById(genreId)
             .orElseThrow { EntityNotFoundException("Genre not found with id: $genreId") }
         
-        return bookRepository.save(Book(title = title, isbn = isbn, author = author))
+        return bookRepository.save(Book(title = title, isbn = isbn, author = author, genre = genre))
     }
 
     @Transactional(readOnly = true)
     fun getAllGenres(): List<Genre> {
         return genreRepository.findAll()
-        return emptyList()
     }
     
     @Transactional(readOnly = true)
@@ -95,6 +97,38 @@ class LibraryService(
         return bookRepository.findAll(PageRequest.of(page, size, Sort.by("title")))
     }
     
+    // ==================== ЧИТАТЕЛИ ====================
+
+    @Transactional(readOnly = true)
+    fun getAllReadersWithBooks(): List<Map<String, Any?>> {
+        return readerRepository.findAll().map { reader ->
+            Hibernate.initialize(reader.books)
+            mapOf(
+                "id" to reader.id,
+                "name" to reader.name,
+                "email" to reader.email,
+                "books" to reader.books.map { book ->
+                    mapOf("id" to book.id, "title" to book.title, "isbn" to book.isbn)
+                }
+            )
+        }
+    }
+
+    @Transactional
+    fun createReader(name: String, email: String): Reader {
+        return readerRepository.save(Reader(name = name, email = email))
+    }
+
+    @Transactional
+    fun borrowBook(readerId: Long, bookId: Long): Reader {
+        val reader = readerRepository.findById(readerId)
+            .orElseThrow { EntityNotFoundException("Reader not found with id: $readerId") }
+        val book = bookRepository.findById(bookId)
+            .orElseThrow { EntityNotFoundException("Book not found with id: $bookId") }
+        reader.books.add(book)
+        return readerRepository.save(reader)
+    }
+
     @Transactional(readOnly = true)
     fun searchBooksByTitle(title: String): List<Map<String, Any?>> {
         return bookRepository.findByTitleContaining(title).map { book ->
